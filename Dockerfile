@@ -31,7 +31,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -y -q && apt-get install -y -q
     qt4-default \
     sudo \
     unzip \
-    wget
+    wget && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install GoogleTest
 ARG GTEST_VERSION="1.8.0"
@@ -59,15 +61,17 @@ WORKDIR /opt
 ARG PROTOBUF_VERSION="3.5.0"
 ARG PROTOBUF_TARGET="protobuf-cpp-${PROTOBUF_VERSION}"
 RUN wget https://github.com/google/protobuf/releases/download/v${PROTOBUF_VERSION}/${PROTOBUF_TARGET}.tar.gz && \
-    tar -xf ${PROTOBUF_TARGET}.tar.gz && \
+    tar -xf ${PROTOBUF_TARGET}.tar.gz && rm ${PROTOBUF_TARGET}.tar.gz && \
     cd protobuf-${PROTOBUF_VERSION} && \
     ./configure && make && make install && ldconfig
 
 # Install QT5
 WORKDIR /opt
-ARG QT_DIR="Qt-5.9.2"
-RUN wget http://download.qt.io/official_releases/qt/5.9/5.9.2/single/qt-everywhere-opensource-src-5.9.2.tar.xz && \
-    tar -xf qt-everywhere-opensource-src-5.9.2.tar.xz && \
+ARG QT_VERSION="5.9.2"
+ARG QT_DIR="Qt-${QT_VERSION}"
+RUN wget http://download.qt.io/official_releases/qt/5.9/${QT_VERSION}/single/qt-everywhere-opensource-src-${QT_VERSION}.tar.xz && \
+    tar -xf qt-everywhere-opensource-src-${QT_VERSION}.tar.xz && \
+    rm qt-everywhere-opensource-src-${QT_VERSION}.tar.xz && \
     mkdir ${QT_DIR} && cd ${QT_DIR} && \
     ../qt-every*/configure -opensource -confirm-license -no-use-gold-linker -no-pch -nomake examples -nomake tests \
     -no-glib -no-spellchecker -no-pulseaudio -no-alsa -prefix /opt/${QT_DIR} && \
