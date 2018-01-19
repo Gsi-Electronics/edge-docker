@@ -104,6 +104,14 @@ RUN wget http://download.qt.io/official_releases/qt/5.9/${QT_VERSION}/single/qt-
     -no-glib -no-spellchecker -no-pulseaudio -no-alsa -prefix /opt/${QT_DIR} && \
     make && make install && echo "/opt/${QT_DIR}/lib" >> /etc/ld.so.conf.d/${QT_DIR}.conf
 
+# Install Boost
+WORKDIR /opt
+ARG BOOST_TARBALL="boostx86.tgz"
+ARG INTERNAL_FILESERVER="10.51.208.171"
+RUN wget ${INTERNAL_FILESERVER}/docker/${BOOST_TARBALL} && \
+    tar -xzvf ${BOOST_TARBALL} && rm ${BOOST_TARBALL} && \
+    echo "/opt/boost-1.65.1/lib" >> /etc/ld.so.conf.d/boost-1.65.1.conf
+
 # Allow builder to manipulate network addresses
 RUN echo "ALL	ALL=NOPASSWD: /sbin/setcap" >> /etc/sudoers && \
     echo "ALL	ALL=NOPASSWD: /sbin/ip" >> /etc/sudoers && \
