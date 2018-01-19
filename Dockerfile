@@ -13,6 +13,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -y -q && apt-get install -y -q
     build-essential \
     ca-certificates \
     ccache \
+    cmake \
     cppcheck \
     curl \
     flex \
@@ -32,7 +33,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -y -q && apt-get install -y -q
     qt4-default \
     sudo \
     unzip \
-    wget && \
+    wget \
+    xsltproc && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -111,6 +113,16 @@ ARG INTERNAL_FILESERVER="10.51.208.171"
 RUN wget ${INTERNAL_FILESERVER}/docker/${BOOST_TARBALL} && \
     tar -xzvf ${BOOST_TARBALL} && rm ${BOOST_TARBALL} && \
     echo "/opt/boost-1.65.1/lib" >> /etc/ld.so.conf.d/boost-1.65.1.conf
+
+# Install nanomsg
+WORKDIR /opt
+ARG NANOMSG_VERSION="1.0.0"
+ARG NANOMSG_TARGET="nanomsg-${NANOMSG_VERSION}"
+RUN wget https://github.com/nanomsg/nanomsg/archive/${NANOMSG_VERSION}.tar.gz && \
+    tar -xf ${NANOMSG_VERSION}.tar.gz && rm ${NANOMSG_VERSION}.tar.gz && \
+    mkdir ${NANOMSG_TARGET}/build && cd ${NANOMSG_TARGET}/build && \
+    cmake .. && cmake --build . && cmake --build . --target install && ldconfig && \
+    cd ../.. && rm -rf ${NANOMSG_TARGET}
 
 # Allow builder to manipulate network addresses
 RUN echo "ALL	ALL=NOPASSWD: /sbin/setcap" >> /etc/sudoers && \
