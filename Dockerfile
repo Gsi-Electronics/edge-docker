@@ -28,6 +28,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -y -q && apt-get install -y -q
     libssl-dev \
     mesa-common-dev \
     pkg-config \
+    python-setuptools \
     qt4-default \
     sudo \
     unzip \
@@ -63,7 +64,33 @@ ARG PROTOBUF_TARGET="protobuf-cpp-${PROTOBUF_VERSION}"
 RUN wget https://github.com/google/protobuf/releases/download/v${PROTOBUF_VERSION}/${PROTOBUF_TARGET}.tar.gz && \
     tar -xf ${PROTOBUF_TARGET}.tar.gz && rm ${PROTOBUF_TARGET}.tar.gz && \
     cd protobuf-${PROTOBUF_VERSION} && \
-    ./configure && make && make install && ldconfig
+    ./configure && make && make install && ldconfig && \
+    cd .. && rm -rf protobuf-${PROTOBUF_VERSION}
+
+# Install six (dependency for python-protobuf
+WORKDIR /opt
+ARG SIX_VERSION="1.11.0"
+RUN wget https://pypi.python.org/packages/16/d8/bc6316cf98419719bd59c91742194c111b6f2e85abac88e496adefaf7afe/six-1.11.0.tar.gz#md5=d12789f9baf7e9fb2524c0c64f1773f8 && \
+    tar -xzvf six-${SIX_VERSION}.tar.gz && rm six-${SIX_VERSION}.tar.gz && \
+    cd six-${SIX_VERSION} && \
+    python setup.py build && python setup.py install && \
+    cd .. && rm -rf six-${SIX_VERSION}
+
+# Install python-protobuf
+WORKDIR /opt
+ARG PROTOBUF_TARGET="protobuf-python-${PROTOBUF_VERSION}"
+RUN wget https://github.com/google/protobuf/releases/download/v${PROTOBUF_VERSION}/${PROTOBUF_TARGET}.tar.gz && \
+    tar -xzvf ${PROTOBUF_TARGET}.tar.gz && rm ${PROTOBUF_TARGET}.tar.gz && \
+    cd protobuf-${PROTOBUF_VERSION}/python && \
+    python setup.py build && python setup.py install && \
+    cd ../.. && rm -rf protobuf-${PROTOBUF_VERSION}
+
+# Install nanopb
+WORKDIR /opt
+ARG NANOPB_VERSION="0.3.9"
+RUN wget https://github.com/nanopb/nanopb/archive/${NANOPB_VERSION}.tar.gz && \
+    tar -xzvf ${NANOPB_VERSION}.tar.gz && rm ${NANOPB_VERSION}.tar.gz && \
+    cd nanopb-${NANOPB_VERSION}/generator/proto && make
 
 # Install QT5
 WORKDIR /opt
