@@ -18,6 +18,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -y -q && apt-get install -y -q
     curl \
     flex \
     g++-5 \
+    gdbserver \
     git-core \
     gperf \
     iproute2 \
