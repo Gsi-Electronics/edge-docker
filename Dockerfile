@@ -105,7 +105,8 @@ RUN wget http://download.qt.io/official_releases/qt/5.9/${QT_VERSION}/single/qt-
     mkdir ${QT_DIR} && cd ${QT_DIR} && \
     ../qt-every*/configure -opensource -confirm-license -no-use-gold-linker -no-pch -nomake examples -nomake tests \
     -no-glib -no-spellchecker -no-pulseaudio -no-alsa -prefix /opt/${QT_DIR} && \
-    make && make install && echo "/opt/${QT_DIR}/lib" >> /etc/ld.so.conf.d/${QT_DIR}.conf
+    make && make install && echo "/opt/${QT_DIR}/lib" >> /etc/ld.so.conf.d/${QT_DIR}.conf && \
+    rm -rf /opt/qt-everywhere*
 
 # Install Boost
 WORKDIR /opt
