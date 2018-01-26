@@ -126,6 +126,15 @@ RUN wget https://github.com/nanomsg/nanomsg/archive/${NANOMSG_VERSION}.tar.gz &&
     cmake .. && cmake --build . && cmake --build . --target install && ldconfig && \
     cd ../.. && rm -rf ${NANOMSG_TARGET}
 
+# Install unittest-cpp
+ARG UNITTESTPP_VERSION="2.0.0"
+WORKDIR /opt
+RUN git clone https://github.com/unittest-cpp/unittest-cpp && \
+    cd unittest-cpp/builds && git checkout v${UNITTESTPP_VERSION} && \
+    cmake -DCMAKE_INSTALL_PREFIX=/opt/unittest-cpp-${UNITTESTPP_VERSION} .. && \
+    make && make install && ldconfig && \
+    cd ../.. && rm -rf unittest-cpp
+
 # Allow builder to manipulate network addresses
 RUN echo "ALL	ALL=NOPASSWD: /sbin/setcap" >> /etc/sudoers && \
     echo "ALL	ALL=NOPASSWD: /sbin/ip" >> /etc/sudoers && \
