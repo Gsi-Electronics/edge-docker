@@ -33,6 +33,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -y -q && apt-get install -y -q
     python-setuptools \
     qt4-default \
     sudo \
+    tzdata \
     unzip \
     wget \
     xsltproc && \
